@@ -222,7 +222,7 @@ const ReportCharts: React.FC<ReportChartsProps> = ({ selectedMonth, selectedYear
               <div className="text-sm text-slate-700 font-medium">Dia 3</div>
               <div className="text-xs text-slate-600">6 visitantes</div>
             </div>
-            <div className="text-center p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl">
+            <div className="text-center p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl">
               <div className="text-xl font-bold text-orange-600 mb-1">Tendência</div>
               <div className="text-sm text-slate-700 font-medium">Crescente</div>
               <div className="text-xs text-slate-600">+18% no mês</div>

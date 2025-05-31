@@ -400,8 +400,8 @@ const ReportMapTable: React.FC<ReportMapTableProps> = ({ selectedMonth, selected
                                 )}
 
                                 {neighborhoodData.cells.length === 0 && neighborhoodData.visitors.length > 0 && (
-                                  <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                                    <p className="text-sm text-yellow-800">
+                                  <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                    <p className="text-sm text-blue-800">
                                       ⚠️ Este bairro tem visitantes mas nenhuma célula ativa. 
                                       Considere criar uma nova célula ou direcionar para bairros próximos.
                                     </p>

@@ -118,7 +118,7 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ onNavigate }) => {
       case 'contacted':
         return 'bg-blue-100 text-blue-800';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-blue-50 text-blue-800';
       case 'not_interested':
         return 'bg-red-100 text-red-800';
       default:
@@ -296,7 +296,7 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ onNavigate }) => {
           </Card>
           <Card className="border-slate-200">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-yellow-600 mb-1">
+              <div className="text-2xl font-bold text-blue-600 mb-1">
                 {filteredVisitors.filter(v => v.status === 'pending').length}
               </div>
               <div className="text-sm text-slate-600">Pendentes</div>

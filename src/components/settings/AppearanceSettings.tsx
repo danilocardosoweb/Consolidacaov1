@@ -66,7 +66,7 @@ const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({ onSave }) => {
                   theme === 'light' ? 'border-church-primary bg-church-primary/5' : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <Sun className="w-6 h-6 text-yellow-500" />
+                <Sun className="w-6 h-6 text-blue-500" />
                 <span className="text-sm font-medium text-slate-700">Claro</span>
               </button>
               

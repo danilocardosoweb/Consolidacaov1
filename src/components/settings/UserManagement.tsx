@@ -43,7 +43,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onSave }) => {
 
   const getRoleIcon = (role: string) => {
     switch (role) {
-      case 'admin': return <Crown className="w-4 h-4 text-yellow-600" />;
+      case 'admin': return <Crown className="w-4 h-4 text-blue-600" />;
       case 'moderator': return <Shield className="w-4 h-4 text-blue-600" />;
       default: return <Users className="w-4 h-4 text-gray-600" />;
     }
@@ -174,7 +174,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onSave }) => {
           <div className="text-sm text-gray-600">Usuários Ativos</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-yellow-600">1</div>
+          <div className="text-2xl font-bold text-blue-600">1</div>
           <div className="text-sm text-gray-600">Administradores</div>
         </div>
         <div className="text-center">

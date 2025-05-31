@@ -27,7 +27,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   const icons = {
     info: <Info size={iconSize} className="text-blue-500" />,
     success: <CheckCircle2 size={iconSize} className="text-green-500" />,
-    warning: <AlertTriangle size={iconSize} className="text-yellow-500" />,
+    warning: <AlertTriangle size={iconSize} className="text-blue-500" />,
     danger: <AlertCircle size={iconSize} className="text-red-500" />
   };
   
