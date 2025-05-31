@@ -37,41 +37,44 @@ const MonthlyReport: React.FC<MonthlyReportProps> = ({ onNavigate }) => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+        <div className="px-4 py-3 sm:px-6 sm:py-4">
+          <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <button
                 onClick={() => onNavigate('dashboard')}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Voltar"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
-              <div>
-                <h1 className="text-2xl font-playfair font-bold text-gray-900">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-playfair font-bold text-gray-900 truncate">
                   Relatório Mensal
                 </h1>
-                <p className="text-gray-600">
-                  Análise detalhada de {months[selectedMonth]} {selectedYear}
+                <p className="text-sm sm:text-base text-gray-600 truncate">
+                  {months[selectedMonth]} {selectedYear}
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-3">
+            <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center sm:space-x-3">
               {/* Month/Year Selector */}
-              <div className="flex items-center space-x-2">
+              <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:items-center sm:space-x-2">
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                  className="input-church text-sm"
+                  className="input-church text-sm w-full py-2"
+                  aria-label="Selecionar mês"
                 >
                   {months.map((month, index) => (
-                    <option key={index} value={index}>{month}</option>
+                    <option key={index} value={index}>{month.substring(0, 3)}</option>
                   ))}
                 </select>
                 <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                  className="input-church text-sm"
+                  className="input-church text-sm w-full py-2"
+                  aria-label="Selecionar ano"
                 >
                   {years.map(year => (
                     <option key={year} value={year}>{year}</option>
@@ -82,14 +85,19 @@ const MonthlyReport: React.FC<MonthlyReportProps> = ({ onNavigate }) => {
               <button
                 onClick={handleGenerateReport}
                 disabled={isGenerating}
-                className="btn-church flex items-center space-x-2"
+                className="btn-church flex items-center justify-center space-x-2 w-full sm:w-auto px-3 py-2 text-sm"
               >
                 {isGenerating ? (
-                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <span>Gerando...</span>
+                  </>
                 ) : (
-                  <Download className="w-4 h-4" />
+                  <>
+                    <Download className="w-4 h-4" />
+                    <span>Exportar</span>
+                  </>
                 )}
-                <span>{isGenerating ? 'Gerando...' : 'Exportar'}</span>
               </button>
             </div>
           </div>
@@ -97,30 +105,32 @@ const MonthlyReport: React.FC<MonthlyReportProps> = ({ onNavigate }) => {
       </header>
 
       {/* Main Content */}
-      <div className="p-6">
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-[750px]">
-            <TabsTrigger value="overview" className="flex items-center space-x-2">
-              <BarChart3 className="w-4 h-4" />
-              <span>Visão Geral</span>
-            </TabsTrigger>
-            <TabsTrigger value="charts" className="flex items-center space-x-2">
-              <LineChart className="w-4 h-4" />
-              <span>Gráficos</span>
-            </TabsTrigger>
-            <TabsTrigger value="map" className="flex items-center space-x-2">
-              <MapPin className="w-4 h-4" />
-              <span>Mapa</span>
-            </TabsTrigger>
-            <TabsTrigger value="comparison" className="flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4" />
-              <span>Comparativo</span>
-            </TabsTrigger>
-            <TabsTrigger value="insights" className="flex items-center space-x-2">
-              <Eye className="w-4 h-4" />
-              <span>Insights</span>
-            </TabsTrigger>
-          </TabsList>
+      <div className="p-3 sm:p-4 md:p-6">
+        <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
+          <div className="overflow-x-auto pb-2 -mx-2 sm:mx-0">
+            <TabsList className="w-full grid grid-cols-5 min-w-[600px] sm:min-w-0 sm:w-auto">
+              <TabsTrigger value="overview" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs sm:text-sm p-2 sm:px-3 sm:py-1.5">
+                <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="truncate">Visão Geral</span>
+              </TabsTrigger>
+              <TabsTrigger value="charts" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs sm:text-sm p-2 sm:px-3 sm:py-1.5">
+                <LineChart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="truncate">Gráficos</span>
+              </TabsTrigger>
+              <TabsTrigger value="map" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs sm:text-sm p-2 sm:px-3 sm:py-1.5">
+                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="truncate">Mapa</span>
+              </TabsTrigger>
+              <TabsTrigger value="comparison" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs sm:text-sm p-2 sm:px-3 sm:py-1.5">
+                <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="truncate">Comparativo</span>
+              </TabsTrigger>
+              <TabsTrigger value="insights" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs sm:text-sm p-2 sm:px-3 sm:py-1.5">
+                <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="truncate">Insights</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="overview" className="space-y-6">
             <ReportMetrics selectedMonth={selectedMonth} selectedYear={selectedYear} />

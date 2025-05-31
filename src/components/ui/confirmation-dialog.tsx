@@ -34,7 +34,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   const buttonVariants = {
     info: 'bg-[#94C6EF] hover:bg-[#7db4db]',
     success: 'bg-green-500 hover:bg-green-600',
-    warning: 'bg-amber-500 hover:bg-amber-600',
+    warning: 'bg-church-primary hover:bg-church-secondary',
     danger: 'bg-red-500 hover:bg-red-600'
   };
 
