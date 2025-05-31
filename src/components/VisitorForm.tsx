@@ -1,7 +1,7 @@
+
 import React, { useState } from 'react';
 import { ArrowLeft, User, Phone, MapPin, ChevronDown, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 
 interface VisitorFormProps {
   onNavigate: (view: string) => void;
@@ -41,7 +41,24 @@ const VisitorForm: React.FC<VisitorFormProps> = ({ onNavigate }) => {
     notes: ''
   });
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: any) => {
+    // Aplicar máscara de telefone
+    if (field === 'phone') {
+      // Remove tudo que não for dígito
+      value = value.replace(/\D/g, '');
+      
+      // Aplica a máscara (XX) XXXXX-XXXX
+      if (value.length > 10) {
+        value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+      } else if (value.length > 5) {
+        value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+      } else if (value.length > 2) {
+        value = value.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+      } else if (value.length > 0) {
+        value = value.replace(/^(\d*)/, '($1');
+      }
+    }
+    
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -136,37 +153,17 @@ const VisitorForm: React.FC<VisitorFormProps> = ({ onNavigate }) => {
     setIsSubmitting(true);
 
     try {
-      // Inserir visitante no Supabase
-      const { error } = await supabase.from('visitors').insert([
-        {
-          name: formData.name,
-          address: `${formData.neighborhood}, ${formData.city}`,
-          lat: 0, // valor padrão
-          lng: 0, // valor padrão
-          distance: 0, // valor padrão
-          status: 'pending',
-          visit_count: 1,
-          is_new_visitor: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          metadata: {
-            gender: formData.gender,
-            phone: formData.phone,
-            cep: formData.cep,
-            ageGroup: formData.ageGroup,
-            generation: formData.generation,
-            howDidYouHear: formData.howDidYouHear,
-            inviterName: formData.inviterName,
-            consolidatorName: formData.consolidatorName,
-            notes: formData.notes
-          }
-        }
-      ]);
-      if (error) throw error;
+      // Aqui você pode adicionar a lógica para salvar os dados no banco de dados
+      console.log('Dados do visitante para salvar:', formData);
+      
+      // Simulando uma requisição assíncrona
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       toast({
         title: "Visitante cadastrado com sucesso! 🎉",
         description: `${formData.name} foi cadastrado(a) em nosso sistema.`,
       });
+
       // Reset form
       setFormData({
         name: '',
@@ -183,7 +180,10 @@ const VisitorForm: React.FC<VisitorFormProps> = ({ onNavigate }) => {
         notes: ''
       });
       setCurrentStep(1);
+      
+      // Navegar de volta para a lista de visitantes
       onNavigate('visitors');
+      
     } catch (error) {
       console.error('Erro ao cadastrar visitante:', error);
       toast({

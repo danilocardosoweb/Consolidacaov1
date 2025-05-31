@@ -47,3 +47,20 @@
   - logs (opcional)
 - Relacionamentos e índices implementados
 - População inicial das 12 gerações concluída 
+
+## Página Inicial - To-Do List
+
+- [ ] Estruturar layout base da página inicial (Header, Hero, Funcionalidades, Métricas, CTA, Footer)
+- [ ] Criar componentes reutilizáveis para cards de funcionalidades e métricas
+- [ ] Implementar responsividade e acessibilidade
+- [ ] Adicionar interatividade aos botões (Cadastro e Área ADM)
+- [ ] Revisar e ajustar estilos conforme identidade visual
+- [ ] Validar layout em diferentes tamanhos de tela
+- [ ] Atualizar documentação e change_log.md após cada marco
+
+## Marcos
+
+- Estrutura visual aprovada pelo usuário
+- Componentes principais implementados
+- Página inicial funcional e responsiva
+- Documentação e registro de progresso atualizados 

@@ -1,34 +1,34 @@
+import React from 'react';
+import { Users, UserPlus, BarChart3, Calendar, ArrowRight, Sparkles, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-import React, { useState } from 'react';
-import { Users, UserPlus, BarChart3, Calendar, Heart, ArrowRight, Sparkles, FileText } from 'lucide-react';
-import Dashboard from '../components/Dashboard';
-import VisitorForm from '../components/VisitorForm';
-import Settings from '../components/Settings';
-import ExportData from '../components/ExportData';
-import MonthlyReport from '../components/MonthlyReport';
+interface IndexProps {
+  onNavigate?: (view: string) => void;
+}
 
-const Index = () => {
-  const [currentView, setCurrentView] = useState('home');
-
-  if (currentView === 'dashboard') {
-    return <Dashboard onNavigate={setCurrentView} />;
-  }
-
-  if (currentView === 'register') {
-    return <VisitorForm onNavigate={setCurrentView} />;
-  }
-
-  if (currentView === 'settings') {
-    return <Settings onNavigate={setCurrentView} />;
-  }
-
-  if (currentView === 'export') {
-    return <ExportData onNavigate={setCurrentView} />;
-  }
-
-  if (currentView === 'monthly-report') {
-    return <MonthlyReport onNavigate={setCurrentView} />;
-  }
+const Index: React.FC<IndexProps> = ({ onNavigate: _ }) => {
+  const navigate = useNavigate();
+  
+  // Mapeia os caminhos para navegação
+  const navigateTo = (path: string) => {
+    navigate(path);
+  };
+  
+  // Função auxiliar para lidar com a navegação
+  const handleNavigation = (view: string) => {
+    const pathMap: Record<string, string> = {
+      'dashboard': '/dashboard',
+      'visitors': '/visitors',
+      'register': '/visitors/new',
+      'settings': '/settings',
+      'export': '/export',
+      'monthly-report': '/reports',
+      'home': '/'
+    };
+    
+    const path = pathMap[view] || '/';
+    navigate(path);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -38,32 +38,16 @@ const Index = () => {
         <nav className="relative z-10 container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-church-primary to-church-secondary rounded-xl flex items-center justify-center">
-                <Heart className="w-6 h-6 text-white" />
+              <div className="w-40 h-40 flex items-center justify-center">
+                <img 
+                  src="/logo-consolidacao.png" 
+                  alt="Logo Ministério de Consolidação" 
+                  className="w-full h-full object-contain"
+                />
               </div>
               <h1 className="text-2xl font-playfair font-bold gradient-text">
-                Sistema Igreja
+                Ministério de Consolidação
               </h1>
-            </div>
-            <div className="hidden md:flex items-center space-x-6">
-              <button 
-                onClick={() => setCurrentView('dashboard')}
-                className="text-gray-600 hover:text-church-primary transition-colors duration-300"
-              >
-                Dashboard
-              </button>
-              <button 
-                onClick={() => setCurrentView('monthly-report')}
-                className="text-gray-600 hover:text-church-primary transition-colors duration-300"
-              >
-                Relatórios
-              </button>
-              <button 
-                onClick={() => setCurrentView('register')}
-                className="btn-church"
-              >
-                Cadastrar Visitante
-              </button>
             </div>
           </div>
         </nav>
@@ -85,7 +69,7 @@ const Index = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <button 
-                onClick={() => setCurrentView('register')}
+                onClick={() => handleNavigation('register')}
                 className="group btn-church text-lg px-8 py-4 flex items-center space-x-3"
               >
                 <UserPlus className="w-6 h-6" />
@@ -94,7 +78,7 @@ const Index = () => {
               </button>
               
               <button 
-                onClick={() => setCurrentView('dashboard')}
+                onClick={() => handleNavigation('dashboard')}
                 className="glass-effect px-8 py-4 rounded-xl text-gray-700 hover:bg-white/90 transition-all duration-300 flex items-center space-x-3"
               >
                 <BarChart3 className="w-6 h-6" />
@@ -163,7 +147,7 @@ const Index = () => {
             </div>
 
             <div 
-              onClick={() => setCurrentView('monthly-report')}
+              onClick={() => handleNavigation('monthly-report')}
               className="group glass-effect p-8 rounded-2xl hover-lift animate-scale-in delay-600 cursor-pointer"
             >
               <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6 group-hover:animate-glow">
@@ -207,13 +191,20 @@ const Index = () => {
       <footer className="py-12 px-6 bg-gray-900 text-white">
         <div className="container mx-auto text-center">
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="w-8 h-8 bg-gradient-to-r from-church-primary to-church-secondary rounded-lg flex items-center justify-center">
-              <Heart className="w-5 h-5 text-white" />
+            <div className="w-32 h-32 flex items-center justify-center">
+              <img 
+                src="/logo-consolidacao-azul.png" 
+                alt="Geração José" 
+                className="w-full h-full object-contain rounded-lg"
+              />
             </div>
-            <h1 className="text-xl font-playfair font-bold">Sistema Igreja</h1>
+            <h1 className="text-xl font-playfair font-bold">Geração José</h1>
           </div>
-          <p className="text-gray-400">
-            Feito com ❤️ para conectar pessoas e fortalecer comunidades
+          <p className="text-gray-400 italic text-center max-w-2xl mx-auto mb-6">
+            "Corações firmados em Deus, como José, para viver o extraordinário."
+          </p>
+          <p className="text-gray-400 text-sm mt-4">
+            Desenvolvido com ❤️ por Danilo Cardoso
           </p>
         </div>
       </footer>
