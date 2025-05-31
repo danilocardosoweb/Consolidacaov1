@@ -107,6 +107,13 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    
+    /* Cor sólida para telas pequenas */
+    @media (max-width: 768px) {
+      background: #94C6EF;
+      -webkit-text-fill-color: #94C6EF;
+      color: #94C6EF;
+    }
   }
   
   .hover-lift {

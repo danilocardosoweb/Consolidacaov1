@@ -163,30 +163,6 @@ const Index: React.FC<IndexProps> = ({ onNavigate: _ }) => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 px-6 bg-gradient-to-r from-church-primary/5 to-church-secondary/5">
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-4 gap-8 text-center">
-            <div className="animate-slide-up">
-              <div className="text-4xl font-bold gradient-text mb-2">1,250+</div>
-              <div className="text-gray-600">Visitantes Cadastrados</div>
-            </div>
-            <div className="animate-slide-up delay-200">
-              <div className="text-4xl font-bold gradient-text mb-2">98%</div>
-              <div className="text-gray-600">Satisfação dos Usuários</div>
-            </div>
-            <div className="animate-slide-up delay-400">
-              <div className="text-4xl font-bold gradient-text mb-2">24/7</div>
-              <div className="text-gray-600">Sistema Disponível</div>
-            </div>
-            <div className="animate-slide-up delay-600">
-              <div className="text-4xl font-bold gradient-text mb-2">100%</div>
-              <div className="text-gray-600">Dados Seguros</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="py-12 px-6 bg-gray-900 text-white">
         <div className="container mx-auto text-center">
