@@ -33,8 +33,8 @@ const Index: React.FC<IndexProps> = ({ onNavigate: _ }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header */}
-      <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-church-primary/10 to-church-secondary/10"></div>
+      <header className="relative overflow-hidden bg-white shadow-sm">
+        <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-church-primary/5 to-church-secondary/5"></div>
         <nav className="relative z-10 container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">

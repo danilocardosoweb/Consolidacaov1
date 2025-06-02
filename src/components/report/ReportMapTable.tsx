@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronRight, MapPin, Users, Home, Navigation, Phone, Clock, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -7,32 +6,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '..
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-
-interface Visitor {
-  id: string;
-  name: string;
-  address: string;
-  lat: number;
-  lng: number;
-  visit_count: number;
-  is_new_visitor: boolean;
-  distance: number;
-}
-
-interface Cell {
-  id: string;
-  name: string;
-  leader_name: string;
-  leader_phone?: string;
-  address: string;
-  lat: number;
-  lng: number;
-  meeting_day: string;
-  meeting_time: string;
-  capacity: number;
-  current_members: number;
-  is_active: boolean;
-}
+import { Visitor } from '@/types/visitor';
+import { Cell } from '@/types/cell';
 
 interface LocationData {
   city: string;
@@ -44,9 +19,12 @@ interface LocationData {
   };
 }
 
-interface ReportMapTableProps {
+export interface ReportMapTableProps {
   selectedMonth: number;
   selectedYear: number;
+  visitors: Visitor[];
+  cells: Cell[];
+  churchLocation: { lat: number; lng: number; name: string; };
 }
 
 const ReportMapTable: React.FC<ReportMapTableProps> = ({ selectedMonth, selectedYear }) => {

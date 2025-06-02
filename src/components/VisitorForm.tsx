@@ -1,7 +1,8 @@
-
 import React, { useState } from 'react';
-import { ArrowLeft, User, Phone, MapPin, ChevronDown, Check } from 'lucide-react';
+import { ArrowLeft, User, Phone, MapPin, ChevronDown, Check, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Visitor } from '@/types/visitor';
 
 interface VisitorFormProps {
   onNavigate: (view: string) => void;
@@ -26,6 +27,7 @@ const VisitorForm: React.FC<VisitorFormProps> = ({ onNavigate }) => {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoadingCep, setIsLoadingCep] = useState(false);
+  const [isGeocoding, setIsGeocoding] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
     gender: '',
@@ -40,6 +42,8 @@ const VisitorForm: React.FC<VisitorFormProps> = ({ onNavigate }) => {
     consolidatorName: '',
     notes: ''
   });
+
+  const [visitorLocation, setVisitorLocation] = useState<{ lat: number | null, lng: number | null }>({ lat: null, lng: null });
 
   const handleInputChange = (field: string, value: any) => {
     // Aplicar máscara de telefone
@@ -60,6 +64,29 @@ const VisitorForm: React.FC<VisitorFormProps> = ({ onNavigate }) => {
     }
     
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Function to geocode address using Nominatim
+  const geocodeAddress = async (address: string) => {
+    if (!address) return null;
+    setIsGeocoding(true);
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&addressdetails=1&limit=1`);
+      const data = await response.json();
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0];
+        console.log(`Geocoded ${address} to ${lat}, ${lon}`);
+        return { lat: parseFloat(lat), lng: parseFloat(lon) };
+      } else {
+        console.warn(`Geocoding failed for address: ${address}`);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error during geocoding:', error);
+      return null;
+    } finally {
+      setIsGeocoding(false);
+    }
   };
 
   const validateStep = (step: number): boolean => {
@@ -126,6 +153,21 @@ const VisitorForm: React.FC<VisitorFormProps> = ({ onNavigate }) => {
         });
         return false;
       }
+      
+      // Also validate that location data was attempted to be fetched
+      if (visitorLocation.lat === null || visitorLocation.lng === null) {
+         toast({
+           title: "Localização necessária",
+           description: "Por favor, busque o CEP ou preencha o endereço e tente buscar a localização.",
+           variant: "destructive"
+         });
+         // Attempt geocoding one more time before preventing step change
+         const addressToGeocode = `${formData.neighborhood}, ${formData.city}, Brasil`;
+         geocodeAddress(addressToGeocode).then(coords => {
+            if(coords) setVisitorLocation(coords);
+         });
+         return false; // Prevent navigation for now
+      }
     } else if (step === 3) {
       if (!formData.consolidatorName) {
         toast({
@@ -153,11 +195,41 @@ const VisitorForm: React.FC<VisitorFormProps> = ({ onNavigate }) => {
     setIsSubmitting(true);
 
     try {
-      // Aqui você pode adicionar a lógica para salvar os dados no banco de dados
       console.log('Dados do visitante para salvar:', formData);
+      console.log('Localização do visitante:', visitorLocation);
       
-      // Simulando uma requisição assíncrona
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Logic to save data to Supabase
+      const newVisitor: Omit<Visitor, 'id' | 'created_at' | 'updated_at' | 'distance'> = {
+        name: formData.name,
+        address: `${formData.neighborhood}, ${formData.city}`, // Combine neighborhood and city for address
+        lat: visitorLocation.lat || 0, // Use fetched lat, default to 0 if null
+        lng: visitorLocation.lng || 0, // Use fetched lng, default to 0 if null
+        distance: 0, // Placeholder, calculation might be needed later
+        is_new_visitor: true, // Assuming all form submissions are new visitors initially
+        visit_count: 1, // First visit
+        status: 'pending', // Default status
+        metadata: {
+          gender: formData.gender,
+          ageGroup: formData.ageGroup,
+          generation: formData.generation,
+          phone: formData.phone,
+          howDidYouHear: formData.howDidYouHear,
+          inviterName: formData.inviterName,
+          consolidatorName: formData.consolidatorName,
+          notes: formData.notes,
+          cep: formData.cep,
+          visitDate: new Date().toISOString(), // Use current date as visit date
+          // Add other metadata fields as needed
+        },
+      };
+
+      const { data, error } = await supabase
+        .from('visitors')
+        .insert([newVisitor as any]); // Cast to any temporarily due to partial Visitor type
+
+      if (error) {
+        throw error;
+      }
       
       toast({
         title: "Visitante cadastrado com sucesso! 🎉",
@@ -594,16 +666,21 @@ const VisitorForm: React.FC<VisitorFormProps> = ({ onNavigate }) => {
                     <button
                       type="submit"
                       className="btn-church bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center min-w-[180px]"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || isGeocoding}
                     >
                       {isSubmitting ? (
-                        <>
+                        <span>
                           <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
                           Salvando...
-                        </>
+                        </span>
+                      ) : isGeocoding ? (
+                        <span>
+                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          Buscando localização...
+                        </span>
                       ) : 'Finalizar Cadastro'}
                     </button>
                   )}

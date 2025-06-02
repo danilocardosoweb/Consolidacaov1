@@ -31,7 +31,17 @@ const CellCardCompact: React.FC<CellCardCompactProps> = ({ cell, onEdit, onDelet
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#94C6EF] to-[#A8D0F2] flex items-center justify-center text-white font-semibold">
-            {cell.leader_name ? cell.leader_name.split(' ').map(n => n[0]).join('').slice(0, 2) : <Users className="w-5 h-5" />}
+            {cell.leader_name && cell.leader_name.trim() ? (
+              cell.leader_name
+                .split(' ')
+                .filter((_, i, arr) => i === 0 || i === arr.length - 1)
+                .map(n => n[0])
+                .join('')
+                .slice(0, 2)
+                .toUpperCase()
+            ) : (
+              <Users className="w-5 h-5" />
+            )}
           </div>
           <div>
             <h3 className="font-medium text-slate-800">{cell.name}</h3>

@@ -102,17 +102,14 @@
   }
   
   .gradient-text {
-    @apply bg-gradient-to-r from-church-primary to-church-secondary bg-clip-text text-transparent;
-    background: linear-gradient(135deg, #94C6EF 0%, #A8D0F2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #94C6EF; /* Cor sólida padrão para telas pequenas */
     
-    /* Cor sólida para telas pequenas */
-    @media (max-width: 768px) {
-      background: #94C6EF;
-      -webkit-text-fill-color: #94C6EF;
-      color: #94C6EF;
+    /* Aplicar gradiente apenas em telas médias e grandes */
+    @media (min-width: 768px) {
+      background: linear-gradient(135deg, #94C6EF 0%, #A8D0F2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
   }
   

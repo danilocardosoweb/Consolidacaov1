@@ -1,73 +1,73 @@
-# Welcome to your Lovable project
+# Sistema de Gerenciamento de Células e Visitantes
 
-## Project info
+## Sobre o Projeto
 
-**URL**: https://lovable.dev/projects/11090018-5550-41ca-b16b-1984ff297020
+Sistema desenvolvido para gerenciamento de células e visitantes de uma igreja, com funcionalidades para cadastro, acompanhamento e geração de relatórios.
 
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/11090018-5550-41ca-b16b-1984ff297020) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
+## Tecnologias Utilizadas
 
 - Vite
 - TypeScript
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase
 
-## How can I deploy this project?
+## Como Executar o Projeto Localmente
 
-Simply open [Lovable](https://lovable.dev/projects/11090018-5550-41ca-b16b-1984ff297020) and click on Share -> Publish.
+### Pré-requisitos
 
-## Can I connect a custom domain to my Lovable project?
+- Node.js (versão 18 ou superior)
+- npm ou yarn
 
-Yes, you can!
+### Passos para Configuração
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+1. **Clone o repositório**
+   ```sh
+   git clone <URL_DO_REPOSITÓRIO>
+   cd <NOME_DO_PROJETO>
+   ```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+2. **Instale as dependências**
+   ```sh
+   npm install
+   # ou
+   yarn install
+   ```
+
+3. **Configure as variáveis de ambiente**
+   Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+   ```
+   VITE_SUPABASE_URL=sua_url_do_supabase
+   VITE_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
+   ```
+
+4. **Inicie o servidor de desenvolvimento**
+   ```sh
+   npm run dev
+   # ou
+   yarn dev
+   ```
+
+5. **Acesse o projeto**
+   Abra seu navegador e acesse: [http://localhost:5173](http://localhost:5173)
+
+## Estrutura do Projeto
+
+- `/src/components` - Componentes React reutilizáveis
+- `/src/pages` - Páginas da aplicação
+- `/src/hooks` - Hooks personalizados
+- `/src/integrations` - Configurações de integrações (como Supabase)
+- `/src/lib` - Utilitários e funções auxiliares
+- `/public` - Arquivos estáticos (imagens, etc.)
+
+## Deploy
+
+Para fazer o deploy do projeto, você pode usar serviços como:
+
+- Vercel
+- Netlify
+- Render
+- Railway
+
+Certifique-se de configurar as variáveis de ambiente corretamente no serviço de hospedagem escolhido.

@@ -1,48 +1,124 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { fetchDailyVisitors, DailyVisitorsData, fetchMonthlyMetrics, MonthlyMetrics, fetchAgeDistribution, AgeDistributionData, fetchWeeklyComparison, WeeklyComparisonData } from '@/lib/reportData';
+import { Loader2 } from 'lucide-react';
 
 interface ReportChartsProps {
   selectedMonth: number;
   selectedYear: number;
 }
 
+// Define specific types for Tooltip payload entries
+interface DailyVisitorsTooltipPayload {
+  dataKey: string; // 'visitors' or 'newVisitors'
+  value: number;
+  color: string;
+  name?: string; // Optional name
+}
+
+interface AgeDistributionTooltipPayload {
+  name: string; // Age group name
+  value: number;
+  color: string;
+  percent?: number; // Optional percentage
+}
+
+// Define the union type for the payload
+type CustomTooltipPayload = DailyVisitorsTooltipPayload | AgeDistributionTooltipPayload;
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: CustomTooltipPayload[];
+  label?: string | number; // Label is typically the X-axis value (day for daily visitors) or undefined for PieChart
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+  if (active && payload && payload.length) {
+    // Check the structure of the first payload item to determine type
+    const firstEntry = payload[0];
+
+    if (firstEntry && 'dataKey' in firstEntry) { // Likely Daily Visitors data (AreaChart)
+       return (
+        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+          {label !== undefined && <p className="font-semibold text-slate-800">{`Dia ${label}`}</p>}
+          {payload.map((entry: DailyVisitorsTooltipPayload, index: number) => ( // Use specific type
+            <p key={index} style={{ color: entry.color }} className="font-medium">
+              {`${entry.dataKey === 'visitors' ? 'Total' : 'Novos'}: ${entry.value}`}
+            </p>
+          ))}
+        </div>
+      );
+    } else if (firstEntry && 'name' in firstEntry && 'value' in firstEntry) { // Likely Age Distribution data (PieChart)
+       return (
+        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+          {payload.map((entry: AgeDistributionTooltipPayload, index: number) => ( // Use specific type
+            <p key={index} style={{ color: entry.color }} className="font-medium">
+              {`${entry.name}: ${entry.value}${entry.percent !== undefined ? ` (${(entry.percent * 100).toFixed(0)}%)` : ''}`}
+            </p>
+          ))}
+        </div>
+      );
+    } else { // Fallback for unexpected structure
+       return (
+        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+          <p className="font-semibold text-slate-800">Tooltip Data</p>
+          <pre>{JSON.stringify(payload, null, 2)}</pre>
+        </div>
+      );
+    }
+  }
+  return null;
+};
+
 const ReportCharts: React.FC<ReportChartsProps> = ({ selectedMonth, selectedYear }) => {
-  // Mock data
-  const dailyVisitors = [
-    { day: '1', visitors: 8, newVisitors: 3 },
-    { day: '2', visitors: 12, newVisitors: 5 },
-    { day: '3', visitors: 6, newVisitors: 2 },
-    { day: '4', visitors: 15, newVisitors: 7 },
-    { day: '5', visitors: 18, newVisitors: 8 },
-    { day: '6', visitors: 22, newVisitors: 9 },
-    { day: '7', visitors: 25, newVisitors: 12 },
-    { day: '8', visitors: 20, newVisitors: 6 },
-    { day: '9', visitors: 16, newVisitors: 4 },
-    { day: '10', visitors: 19, newVisitors: 7 },
-    { day: '11', visitors: 23, newVisitors: 10 },
-    { day: '12', visitors: 28, newVisitors: 14 },
-    { day: '13', visitors: 26, newVisitors: 11 },
-    { day: '14', visitors: 30, newVisitors: 15 },
-    { day: '15', visitors: 27, newVisitors: 9 },
-  ];
+  const [dailyVisitorsData, setDailyVisitorsData] = useState<DailyVisitorsData[]>([]);
+  const [loadingDaily, setLoadingDaily] = useState(true);
+  const [ageDistributionData, setAgeDistributionData] = useState<AgeDistributionData[]>([]);
+  const [loadingAge, setLoadingAge] = useState(true);
+  const [weeklyComparisonData, setWeeklyComparisonData] = useState<WeeklyComparisonData[]>([]);
+  const [loadingWeekly, setLoadingWeekly] = useState(true);
 
-  const ageGroups = [
-    { name: '18-25', value: 25, color: '#94C6EF' },
-    { name: '26-35', value: 35, color: '#A8D0F2' },
-    { name: '36-45', value: 28, color: '#BCDAF5' },
-    { name: '46-55', value: 18, color: '#CFE4F8' },
-    { name: '56+', value: 14, color: '#E2EEFB' },
-  ];
+  useEffect(() => {
+    const loadDailyData = async () => {
+      setLoadingDaily(true);
+      const data = await fetchDailyVisitors(selectedMonth, selectedYear);
+      if (data) {
+        setDailyVisitorsData(data);
+      } else {
+         setDailyVisitorsData([]);
+      }
+      setLoadingDaily(false);
+    };
 
-  const weeklyComparison = [
-    { week: 'Sem 1', current: 85, previous: 72 },
-    { week: 'Sem 2', current: 92, previous: 78 },
-    { week: 'Sem 3', current: 88, previous: 85 },
-    { week: 'Sem 4', current: 96, previous: 88 },
-  ];
+    const loadAgeDistributionData = async () => {
+      setLoadingAge(true);
+      const data = await fetchAgeDistribution(selectedMonth, selectedYear);
+      if (data) {
+        setAgeDistributionData(data);
+      } else {
+        setAgeDistributionData([]); // Ensure it's an empty array on error/no data
+      }
+      setLoadingAge(false);
+    };
 
+    const loadWeeklyComparisonData = async () => {
+      setLoadingWeekly(true);
+      const data = await fetchWeeklyComparison(selectedMonth, selectedYear);
+      if (data) {
+        setWeeklyComparisonData(data);
+      } else {
+         setWeeklyComparisonData([]);
+      }
+      setLoadingWeekly(false);
+    };
+
+    loadDailyData();
+    loadAgeDistributionData();
+    loadWeeklyComparisonData();
+  }, [selectedMonth, selectedYear]);
+
+  // Mock data (to be replaced)
   const monthlyTrend = [
     { month: 'Jan', visitors: 180 },
     { month: 'Feb', visitors: 195 },
@@ -51,22 +127,6 @@ const ReportCharts: React.FC<ReportChartsProps> = ({ selectedMonth, selectedYear
     { month: 'May', visitors: 235 },
     { month: 'Jun', visitors: 247 },
   ];
-
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-semibold text-slate-800">{`Dia ${label}`}</p>
-          {payload.map((entry: any, index: number) => (
-            <p key={index} style={{ color: entry.color }} className="font-medium">
-              {`${entry.dataKey === 'visitors' ? 'Total' : 'Novos'}: ${entry.value}`}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="space-y-6">
@@ -90,30 +150,41 @@ const ReportCharts: React.FC<ReportChartsProps> = ({ selectedMonth, selectedYear
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={dailyVisitors}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="day" stroke="#475569" style={{ fontSize: '12px', fontWeight: 500 }} />
-                <YAxis stroke="#475569" style={{ fontSize: '12px', fontWeight: 500 }} />
-                <Tooltip content={<CustomTooltip />} />
-                <Area 
-                  type="monotone" 
-                  dataKey="visitors" 
-                  stroke="#94C6EF" 
-                  fill="#94C6EF" 
-                  fillOpacity={0.3}
-                  strokeWidth={3}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="newVisitors" 
-                  stroke="#A8D0F2" 
-                  fill="#A8D0F2" 
-                  fillOpacity={0.5}
-                  strokeWidth={2}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {loadingDaily ? (
+              <div className="flex flex-col items-center justify-center h-64">
+                <Loader2 className="w-8 h-8 text-church-primary animate-spin mb-4" />
+                <p className="text-gray-700">Carregando dados diários...</p>
+              </div>
+            ) : dailyVisitorsData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}> {/* Corrected width to 100% */}
+                <AreaChart data={dailyVisitorsData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="day" stroke="#475569" style={{ fontSize: '12px', fontWeight: 500 }} />
+                  <YAxis stroke="#475569" style={{ fontSize: '12px', fontWeight: 500 }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Area
+                    type="monotone"
+                    dataKey="visitors"
+                    stroke="#94C6EF"
+                    fill="#94C6EF"
+                    fillOpacity={0.3}
+                    strokeWidth={3}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="newVisitors"
+                    stroke="#A8D0F2"
+                    fill="#A8D0F2"
+                    fillOpacity={0.5}
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                <p>Nenhum dado de visitante encontrado para este mês.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -125,10 +196,16 @@ const ReportCharts: React.FC<ReportChartsProps> = ({ selectedMonth, selectedYear
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {loadingAge ? (
+               <div className="flex flex-col items-center justify-center h-64">
+                <Loader2 className="w-8 h-8 text-church-primary animate-spin mb-4" />
+                <p className="text-gray-700">Carregando distribuição por idade...</p>
+              </div>
+            ) : ageDistributionData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={ageGroups}
+                  data={ageDistributionData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -138,13 +215,18 @@ const ReportCharts: React.FC<ReportChartsProps> = ({ selectedMonth, selectedYear
                   dataKey="value"
                   style={{ fontSize: '12px', fontWeight: 500, fill: '#1e293b' }}
                 >
-                  {ageGroups.map((entry, index) => (
+                  {ageDistributionData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                <p>Nenhum dado de distribuição por idade encontrado para este mês.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -156,8 +238,14 @@ const ReportCharts: React.FC<ReportChartsProps> = ({ selectedMonth, selectedYear
             </CardTitle>
           </CardHeader>
           <CardContent>
+             {loadingWeekly ? (
+               <div className="flex flex-col items-center justify-center h-64">
+                <Loader2 className="w-8 h-8 text-church-primary animate-spin mb-4" />
+                <p className="text-gray-700">Carregando comparativo semanal...</p>
+              </div>
+            ) : weeklyComparisonData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={weeklyComparison}>
+              <BarChart data={weeklyComparisonData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis dataKey="week" stroke="#475569" style={{ fontSize: '12px', fontWeight: 500 }} />
                 <YAxis stroke="#475569" style={{ fontSize: '12px', fontWeight: 500 }} />
@@ -167,6 +255,11 @@ const ReportCharts: React.FC<ReportChartsProps> = ({ selectedMonth, selectedYear
                 <Bar dataKey="previous" name="Mês Anterior" fill="#A8D0F2" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+             ) : (
+              <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                <p>Nenhum dado de comparativo semanal encontrado para este mês.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -184,10 +277,10 @@ const ReportCharts: React.FC<ReportChartsProps> = ({ selectedMonth, selectedYear
                 <XAxis dataKey="month" stroke="#475569" style={{ fontSize: '12px', fontWeight: 500 }} />
                 <YAxis stroke="#475569" style={{ fontSize: '12px', fontWeight: 500 }} />
                 <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px', fontWeight: 500 }} />
-                <Line 
-                  type="monotone" 
-                  dataKey="visitors" 
-                  stroke="#94C6EF" 
+                <Line
+                  type="monotone"
+                  dataKey="visitors"
+                  stroke="#94C6EF"
                   strokeWidth={4}
                   dot={{ fill: '#94C6EF', strokeWidth: 2, r: 6 }}
                   activeDot={{ r: 8, stroke: '#94C6EF', strokeWidth: 2 }}

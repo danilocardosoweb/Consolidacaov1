@@ -6,12 +6,8 @@ import { Card, CardContent } from './ui/card';
 import VisitorDetailsModal from './modals/VisitorDetailsModal';
 import EditVisitorModal from './modals/EditVisitorModal';
 import DeleteVisitorModal from './modals/DeleteVisitorModal';
-import { Visitor } from '@/types/visitor';
+import { Visitor, VisitorTableProps } from '@/types/visitor';
 import { supabase } from '@/integrations/supabase/client';
-
-interface VisitorTableProps {
-  onNavigate: (view: string) => void;
-}
 
 const VisitorTable: React.FC<VisitorTableProps> = ({ onNavigate }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,7 +33,7 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ onNavigate }) => {
         setVisitors([]);
       } else {
         setVisitors(
-          (data || []).map((v: Record<string, any>) => ({
+          (data || []).map((v: any) => ({
             id: v.id,
             name: v.name,
             gender: v.metadata?.gender || '',
@@ -306,9 +302,8 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ onNavigate }) => {
 
         {/* Content */}
         {viewMode === 'cards' ? (
-          // Mobile Card View
-          <div className="space-y-4">
-            {filteredVisitors.map((visitor) => (
+          <div className="grid grid-cols-1 gap-4 p-4 sm:hidden bg-white rounded-lg">
+            {filteredVisitors.map(visitor => (
               <Card key={visitor.id} className="border-slate-200 hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between mb-3">

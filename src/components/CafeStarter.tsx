@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Calendar, Coffee, Users, UserCheck, TrendingUp, Plus, Search, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -217,7 +216,7 @@ const CafeStarter: React.FC<CafeStarterProps> = ({ onNavigate }) => {
 
       <div className="p-4 sm:p-6 space-y-6">
         {/* Estatísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:bg-white rounded-lg p-4">
           <Card className="border-slate-200">
             <CardContent className="p-6 flex items-center space-x-4">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-400 to-blue-500 flex items-center justify-center">

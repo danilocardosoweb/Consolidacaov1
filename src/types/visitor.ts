@@ -1,23 +1,13 @@
-export interface Visitor {
-  id: string;
-  name: string;
-  gender: string;
-  email: string;
-  phone: string;
-  cep: string;
-  neighborhood: string;
-  city: string;
-  ageGroup: string;
-  generation: string;
-  howDidYouHear: string;
-  inviterName: string;
-  consolidatorName: string;
-  notes: string;
-  visitDate: string;
-  firstTime: boolean;
-  status: 'pending' | 'contacted' | 'converted' | 'not_interested' | 'active';
-  createdAt: string;
-  updatedAt: string;
+import { Tables, Enums } from "@/integrations/supabase/types";
+
+export interface Visitor extends Tables<'visitors'> {
+  metadata: {
+    gender?: Enums<'gender_type'>;
+    ageGroup?: Enums<'age_group_type'>;
+    // Add other expected metadata fields here with their types
+    [key: string]: any; // Allow other properties not explicitly defined
+  } | null;
+  // Keep other fields that are directly in the visitors table
 }
 
 export interface VisitorTableProps {

@@ -57,6 +57,40 @@ interface FormData {
 
 const CellManagement: React.FC<CellManagementProps> = ({ onNavigate }) => {
   const [cells, setCells] = useState<Cell[]>([]);
+  const [filteredCells, setFilteredCells] = useState<Cell[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  
+  // Função para aplicar filtros
+  const applyFilters = (term: string, status: string) => {
+    let result = [...cells];
+    
+    // Aplicar filtro de busca
+    if (term) {
+      const searchTermLower = term.toLowerCase();
+      result = result.filter(cell => 
+        cell.name.toLowerCase().includes(searchTermLower) ||
+        cell.leader_name.toLowerCase().includes(searchTermLower) ||
+        (cell.neighborhood && cell.neighborhood.toLowerCase().includes(searchTermLower)) ||
+        (cell.leader_phone && cell.leader_phone.includes(term)) ||
+        (cell.leader_email && cell.leader_email.toLowerCase().includes(searchTermLower))
+      );
+    }
+    
+    // Aplicar filtro de status
+    if (status === 'ativas') {
+      result = result.filter(cell => cell.is_active);
+    } else if (status === 'inativas') {
+      result = result.filter(cell => !cell.is_active);
+    }
+    
+    setFilteredCells(result);
+  };
+  
+  // Atualizar células filtradas quando a lista de células ou filtros mudarem
+  useEffect(() => {
+    applyFilters(searchTerm, statusFilter);
+  }, [cells, searchTerm, statusFilter]);
   const [showForm, setShowForm] = useState(false);
   const [editingCell, setEditingCell] = useState<Cell | null>(null);
   const [loading, setLoading] = useState(true);
@@ -100,7 +134,7 @@ const CellManagement: React.FC<CellManagementProps> = ({ onNavigate }) => {
       if (error) throw error;
       
       // Garante que os novos campos tenham valores padrão
-      const cellsWithDefaults = (data || []).map((cell: any) => ({
+      const cellsWithDefaults = (data || []).map((cell: Cell) => ({
         ...cell,
         cep: cell.cep || '',
         city: cell.city || '',
@@ -108,6 +142,7 @@ const CellManagement: React.FC<CellManagementProps> = ({ onNavigate }) => {
       })) as Cell[];
       
       setCells(cellsWithDefaults);
+      setFilteredCells(cellsWithDefaults);
     } catch (error) {
       console.error('Erro ao buscar células:', error);
       toast.error('Erro ao carregar células');
@@ -335,47 +370,72 @@ const CellManagement: React.FC<CellManagementProps> = ({ onNavigate }) => {
     <div className="space-y-6">
       {/* 1. Cabeçalho fixo com botão de voltar */}
       <div className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-slate-100 shadow-sm">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onNavigate('dashboard')}
-              className="text-slate-600 hover:bg-slate-100"
-              title="Voltar para o Dashboard"
-            >
-              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-            </Button>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-playfair font-bold text-slate-800">Gerenciar Células</h1>
-              <p className="text-slate-600 font-medium text-sm md:text-base">Cadastre e gerencie os grupos de casa da igreja</p>
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onNavigate('dashboard')}
+                className="text-slate-600 hover:bg-slate-100"
+                title="Voltar para o Dashboard"
+              >
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left">
+                  <path d="M19 12H5"/>
+                  <path d="m12 19-7-7 7-7"/>
+                </svg>
+              </Button>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-playfair font-bold text-slate-800">Gerenciar Células</h1>
+                <p className="text-slate-600 text-sm hidden sm:block">Cadastre e gerencie os grupos de casa da igreja</p>
+              </div>
+            </div>
+            <div className="w-full sm:w-auto">
+              <Button
+                onClick={() => setShowForm(true)}
+                className="w-full sm:w-auto bg-gradient-to-r from-[#94C6EF] to-[#A8D0F2] text-white hover:opacity-90 px-4 sm:px-5 py-2 text-sm sm:text-base font-semibold shadow-md whitespace-nowrap"
+              >
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                <span>Nova Célula</span>
+              </Button>
             </div>
           </div>
-          <Button
-            onClick={() => setShowForm(true)}
-            className="bg-gradient-to-r from-[#94C6EF] to-[#A8D0F2] text-white hover:opacity-90 px-5 py-2 text-base font-semibold shadow-md"
-          >
-            <Plus className="w-5 h-5 mr-2" /> Nova Célula
-          </Button>
         </div>
       </div>
 
       {/* 2. Busca, Filtros e Visualização */}
-      <div className="container mx-auto px-4 mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex-1 flex gap-2">
-          <Input
-            placeholder="Buscar por nome, líder ou bairro..."
-            className="w-full max-w-xs border-slate-300 focus:border-[#94C6EF]"
-            // Adicione lógica de busca se desejar
-          />
-          {/* Filtros rápidos (exemplo) */}
-          <select className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:border-[#94C6EF]">
-            <option value="">Todas</option>
-            <option value="ativas">Ativas</option>
-            <option value="inativas">Inativas</option>
-          </select>
+      <div className="container mx-auto px-4 mt-4 sm:mt-6 sm:bg-white rounded-lg p-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
+          <div className="flex-1">
+            <Input
+              placeholder="Buscar por nome, líder, bairro, telefone ou email..."
+              className="w-full border-slate-300 focus:border-[#94C6EF]"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="relative w-full sm:w-auto">
+            <select 
+              className="appearance-none border border-slate-300 rounded-md pl-3 pr-8 py-2 text-sm focus:border-[#94C6EF] h-auto w-full bg-white"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{
+                backgroundImage: "url(" + encodeURI("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234b5563' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") + ")",
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 0.75rem center',
+                backgroundSize: '0.75rem',
+                paddingRight: '2rem'
+              }}
+            >
+              <option value="">Todas as células</option>
+              <option value="ativas">Ativas</option>
+              <option value="inativas">Inativas</option>
+            </select>
+          </div>
         </div>
         
+
+
         {/* Botão de alternar visualização */}
         <div className="flex items-center gap-2">
           <span className="text-sm text-slate-600 hidden sm:inline">Visualização:</span>
@@ -400,7 +460,22 @@ const CellManagement: React.FC<CellManagementProps> = ({ onNavigate }) => {
 
       {/* 3. Grid Responsivo de Cards */}
       <div className="container mx-auto px-4 mt-8">
-        {cells.length === 0 ? (
+        {filteredCells.length === 0 && cells.length > 0 ? (
+          <div className="text-center py-12">
+            <Users className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+            <p className="text-slate-500">Nenhuma célula encontrada com os filtros atuais.</p>
+            <Button
+              variant="outline"
+              className="mt-4 text-[#94C6EF] border-[#94C6EF] hover:bg-[#94C6EF]/10"
+              onClick={() => {
+                setSearchTerm('');
+                setStatusFilter('');
+              }}
+            >
+              Limpar filtros
+            </Button>
+          </div>
+        ) : filteredCells.length === 0 ? (
           // 6. Empty State ilustrativo
           <div className="flex flex-col items-center justify-center py-24">
             <Users className="w-20 h-20 text-[#94C6EF] mb-4 animate-bounce" />
@@ -416,7 +491,7 @@ const CellManagement: React.FC<CellManagementProps> = ({ onNavigate }) => {
         ) : compactView ? (
           // Visualização em Lista (Compacta)
           <div className="space-y-2">
-            {cells.map((cell) => (
+            {filteredCells.map((cell) => (
               <CellCardCompact 
                 key={cell.id}
                 cell={cell}
@@ -427,13 +502,22 @@ const CellManagement: React.FC<CellManagementProps> = ({ onNavigate }) => {
           </div>
         ) : (
           // Visualização em Grid (Padrão)
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cells.map((cell) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:bg-white rounded-lg p-4">
+            {filteredCells.map((cell) => (
               <Card key={cell.id} className="relative group hover:shadow-xl transition-shadow border-2 border-transparent hover:border-[#94C6EF]/40 bg-white/90">
                 {/* Ícone/avatar do líder */}
                 <div className="absolute -top-6 left-6 bg-gradient-to-r from-[#94C6EF] to-[#A8D0F2] w-12 h-12 rounded-full flex items-center justify-center shadow-lg border-4 border-white">
-                  <span className="text-white text-xl font-bold">
-                    {cell.leader_name ? cell.leader_name.split(' ').map(n => n[0]).join('').slice(0, 2) : <Users className="w-6 h-6" />}
+                  <span className="text-white text-xl font-bold uppercase">
+                    {cell.leader_name && cell.leader_name.trim() ? (
+                      cell.leader_name
+                        .split(' ')
+                        .filter((_, i, arr) => i === 0 || i === arr.length - 1) // Pega primeiro e último nome
+                        .map(n => n[0])
+                        .join('')
+                        .slice(0, 2)
+                    ) : (
+                      <Users className="w-6 h-6" />
+                    )}
                   </span>
                 </div>
                 <CardHeader className="pb-2 pt-8">

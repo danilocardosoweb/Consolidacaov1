@@ -34,9 +34,9 @@ const MonthlyReport: React.FC<MonthlyReportProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white shadow-sm border-b flex-shrink-0">
         <div className="px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center space-x-2 sm:space-x-4">
@@ -105,10 +105,10 @@ const MonthlyReport: React.FC<MonthlyReportProps> = ({ onNavigate }) => {
       </header>
 
       {/* Main Content */}
-      <div className="p-3 sm:p-4 md:p-6">
-        <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
-          <div className="overflow-x-auto pb-2 -mx-2 sm:mx-0">
-            <TabsList className="w-full grid grid-cols-5 min-w-[600px] sm:min-w-0 sm:w-auto">
+      <div className="flex-1 overflow-hidden p-1 sm:p-2">
+        <Tabs defaultValue="overview" className="h-full flex flex-col">
+          <div className="w-full overflow-hidden pb-1">
+            <TabsList className="w-full grid grid-cols-5 gap-0.5 sm:gap-1">
               <TabsTrigger value="overview" className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs sm:text-sm p-2 sm:px-3 sm:py-1.5">
                 <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span className="truncate">Visão Geral</span>
@@ -132,25 +132,37 @@ const MonthlyReport: React.FC<MonthlyReportProps> = ({ onNavigate }) => {
             </TabsList>
           </div>
 
-          <TabsContent value="overview" className="space-y-6">
-            <ReportMetrics selectedMonth={selectedMonth} selectedYear={selectedYear} />
-          </TabsContent>
+          <div className="flex-1 overflow-hidden mt-1">
+            <TabsContent value="overview" className="h-full overflow-hidden">
+              <div className="h-full overflow-auto pr-1 pb-1">
+                <ReportMetrics selectedMonth={selectedMonth} selectedYear={selectedYear} />
+              </div>
+            </TabsContent>
 
-          <TabsContent value="charts" className="space-y-6">
-            <ReportCharts selectedMonth={selectedMonth} selectedYear={selectedYear} />
-          </TabsContent>
+            <TabsContent value="charts" className="h-full overflow-hidden">
+              <div className="h-full overflow-auto pr-1 pb-1">
+                <ReportCharts selectedMonth={selectedMonth} selectedYear={selectedYear} />
+              </div>
+            </TabsContent>
 
-          <TabsContent value="map" className="space-y-6">
-            <ReportMap selectedMonth={selectedMonth} selectedYear={selectedYear} />
-          </TabsContent>
+            <TabsContent value="map" className="h-full overflow-hidden">
+              <div className="h-full overflow-auto pr-1 pb-1">
+                <ReportMap selectedMonth={selectedMonth} selectedYear={selectedYear} />
+              </div>
+            </TabsContent>
 
-          <TabsContent value="comparison" className="space-y-6">
-            <ReportComparison selectedMonth={selectedMonth} selectedYear={selectedYear} />
-          </TabsContent>
+            <TabsContent value="comparison" className="h-full overflow-hidden">
+              <div className="h-full overflow-auto pr-1 pb-1">
+                <ReportComparison selectedMonth={selectedMonth} selectedYear={selectedYear} />
+              </div>
+            </TabsContent>
 
-          <TabsContent value="insights" className="space-y-6">
-            <ReportInsights selectedMonth={selectedMonth} selectedYear={selectedYear} />
-          </TabsContent>
+            <TabsContent value="insights" className="h-full overflow-hidden">
+              <div className="h-full overflow-auto pr-1 pb-1">
+                <ReportInsights selectedMonth={selectedMonth} selectedYear={selectedYear} />
+              </div>
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
     </div>
